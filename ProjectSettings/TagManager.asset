@@ -3,17 +3,32 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - floor
+  - wall
+  - poison
+  - source
+  - UnBreak
+  - Exit
+  - Potion
+  - GasMask
+  - Pitfall
+  - gasMask
+  - Dummy
+  - Hurricane
+  - Cleaning
+  - PoisonGas
+  - StaminaPotion
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - MiniMap
   - Water
   - UI
-  - 
-  - 
-  - 
+  - DontLookMiniMap
+  - player
+  - Stage
   - 
   - 
   - 
