@@ -24,6 +24,7 @@ public class BouncePlayer : MonoBehaviour
     public float cleanRange = 1.0f;
     public Color floorColor = Color.white;  // 床の色
 
+    SoundManager soundManager;
     private bool isInvincible;
 
     public void Update()
@@ -47,6 +48,7 @@ public class BouncePlayer : MonoBehaviour
             collision.gameObject.GetComponent<PlayerController>().moveSpeed = 0;
 
             isInvincible = true;
+            SoundManager.Instance.Play("台風に当たった");
             //Debug.Log("無敵中");
 
             //衝突した面の、接触した点におけるベクトルを取得
