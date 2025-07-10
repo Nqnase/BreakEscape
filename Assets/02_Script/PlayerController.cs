@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
     private float staminaRecoveryWaitTimer = 0f;
 
     [Header("脱出できない時")]
-    [SerializeField] private Image dontExit;
+    //[SerializeField] private Image dontExit;
 
     public Slider staminaSlider;
 
@@ -104,6 +104,7 @@ public class PlayerController : MonoBehaviour
             staminaSlider.value = currentStamina;
         }
 
+
         // パーティクルシステムのインスタンスを生成する。
         newParticle = Instantiate(poisonEffect);
         // パーティクルの発生場所をこのスクリプトをアタッチしているGameObjectの場所にする。
@@ -112,7 +113,7 @@ public class PlayerController : MonoBehaviour
         newParticle.transform.parent = this.transform;
 
         hammer.SetActive(false);
-        dontExit.enabled = false;
+        //dontExit.enabled = false;
 
         uiManager = FindAnyObjectByType<UIManager>();
     }
@@ -194,12 +195,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OndebugMode(InputAction.CallbackContext context)
-    {
-        currentHealth = 2100000000;
-        maxStamina = 21000000000;
-        currentStamina = 21000000000;
-    }
+    //デバッグ用のキー
+    //public void OndebugMode(InputAction.CallbackContext context)
+    //{
+    //    currentHealth = 2100000000;
+    //    maxStamina = 21000000000;
+    //    currentStamina = 21000000000;
+    //}
     public void OnloadScene(InputAction.CallbackContext context)
     {
         SceneManager.LoadScene("Level1");
@@ -362,6 +364,9 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Player is Dead!");
     }
 
+    /// <summary>
+    /// プレイヤーが毒のエリアに当たっているかチェックする
+    /// </summary>
     void CheckForPoison()
     {
         Ray ray = new Ray(transform.position, Vector3.down);
@@ -391,7 +396,7 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    dontExit.enabled = true;
+                    uiManager._DontExit.gameObject.SetActive(true);
                 }
             }
         }
@@ -405,7 +410,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Exit") && !_canExit)
         {
-            dontExit.enabled = false;
+            uiManager._DontExit.gameObject.SetActive(false);
         }
     }
 
@@ -425,6 +430,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ダメージを受ける時エフェクト発生
+    /// </summary>
+    /// <returns></returns>
     IEnumerator PoisonDamage()
     {
         if (!effectFlag)
@@ -456,6 +465,7 @@ public class PlayerController : MonoBehaviour
         float a = 0;
         while (a < remainTime)
         {
+            /// プレイヤーが回転したらエフェクトを逆方向に同じ分加算してエフェクトが回転しないようにする
             newParticle.gameObject.transform.rotation = Quaternion.Euler
                 (newParticle.gameObject.transform.rotation.x,
                 newParticle.gameObject.transform.rotation.y - transform.root.rotation.y,
@@ -488,6 +498,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// スタミナを使用
+    /// </summary>
+    /// <param name="amount"></param>
     void UseStamina(float amount)
     {
         if (!OpeningMap)

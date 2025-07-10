@@ -40,9 +40,6 @@ public class Dummy : MonoBehaviour
     // ƒ_ƒ[ƒWˆ—
     private void Damage()
     {
-        //playerController.currentHealth -= damage;
-        //if (playerController.currentHealth < playerController.maxHealth)
-        //    playerController.currentHealth = playerController.maxHealth;
         playerController.currentHealth -= damage;
     }
 }

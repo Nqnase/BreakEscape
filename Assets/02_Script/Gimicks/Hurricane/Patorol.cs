@@ -22,7 +22,7 @@ public class Patorol : MonoBehaviour
         transform.position += direction.normalized * speed * Time.deltaTime;
 
         // ポイントに到達したか確認
-        if (direction.magnitude < 0.5f) // 距離が小さいとき次のポイントへ
+        if (direction.magnitude < 0.5f)
         {
             if (reverse)
             {
@@ -45,29 +45,25 @@ public class Patorol : MonoBehaviour
 
     }
 
-    // 逆方向に巡回する処理を追加
+    /// <summary>
+    /// 逆方向に巡回する処理を追加
+    /// </summary>
     public void ReverseDirection()
     {
-        reverse = true;  // フラグの切り替え
-        Debug.Log("移動方向を反転！");
+        reverse = true;
+        //Debug.Log("移動方向を反転！");
     }
 
-
+    /// <summary>
+    /// 壁に衝突した時
+    /// </summary>
+    /// <param name="collision"></param>
     void OnCollisionEnter(UnityEngine.Collision collision)
     {
-        // 衝突した相手にPlayerタグが付いているとき
-        if (collision.gameObject.tag == "Player")
-        {
-            Debug.Log("プレイヤーに当たりました。");
-        }
-
         if (collision.gameObject.tag == "wall")
         {
-            //消える
             Destroy(gameObject);
             Debug.Log("壁に当たりました。");
-
-
         }
     }
 }

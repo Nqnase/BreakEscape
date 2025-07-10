@@ -26,22 +26,6 @@ public class Chest : MonoBehaviour
 
     void Start()
     {
-        //if (progressBar == null)
-        //{
-        //    // シーン内のスライダーとキャンバスを検索
-        //    progressBar = FindObjectOfType<Slider>();
-        //    if (progressBar != null)
-        //    {
-        //        canvas = progressBar.GetComponentInParent<Canvas>();
-        //        canvas.gameObject.SetActive(false); // 最初は非表示
-        //        progressBar.value = 0f; // 初期値
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Sliderがシーン内に存在しません");
-        //    }
-        //}
-
         chestPos = this.transform.position;
 
         // パーティクルシステムのインスタンスを生成する。
@@ -55,6 +39,10 @@ public class Chest : MonoBehaviour
         progressBar.value = 0f; // 初期値
     }
 
+    /// <summary>
+    /// プレイヤーが範囲内にいるとゲージを表示
+    /// </summary>
+    /// <param name="other"></param>
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -63,11 +51,15 @@ public class Chest : MonoBehaviour
             if (canvas != null)
             {
                 canvas.gameObject.SetActive(true);
-                canvas.transform.position = this.transform.position + Vector3.up; // 宝箱の上に表示
+                canvas.transform.position = this.transform.position + Vector3.up;
             }
         }
     }
 
+    /// <summary>
+    /// プレイヤーが範囲内にいるとゲージが進む
+    /// </summary>
+    /// <param name="other"></param>
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -80,7 +72,7 @@ public class Chest : MonoBehaviour
             }
             if (progressBar != null)
             {
-                progressBar.value = 0f; // ゲージリセット
+                progressBar.value = 0f; 
             }
         }
     }
@@ -119,6 +111,9 @@ public class Chest : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 宝箱が開くときにランダムなアイテムを生成
+    /// </summary>
     void SpawnObject()
     {
         List<GameObject> availablePoints = new List<GameObject>(objectToSpawn);

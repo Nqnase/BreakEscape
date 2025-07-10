@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
@@ -26,24 +27,28 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button _PauseToTitleButton; // ゲームオーバー時のタイトルボタン 
 
     [SerializeField] private Image _ExitInf;    // 脱出を案内する画像
+    [SerializeField] public Image _DontExit;
     [SerializeField] private Image _StartInf;
-    public float displayDelay = 2.0f; // 非表示までの待機時間（秒）
+    [SerializeField] private Button _StartButton;
 
     private float timer;
     private bool isDisplayed;
     private PlayerController player;
     private bool buttonsActivated = false;
     public bool isPauseing = false;
+    private bool startDontPause = false;
 
     void Start()
     {
+        _StartButton.Select();
+        _StartButton.onClick.AddListener(StartInformation);
         player = FindAnyObjectByType<PlayerController>();
-
         _ReturnToTitleButton.gameObject.SetActive(false);
         _RetryButton.gameObject.SetActive(false);
         _GameOverPanel.SetActive(false);
         _PausePanel.SetActive(false); // 初期は非表示
         _ExitInf.gameObject.SetActive(false);
+        _DontExit.gameObject.SetActive(false); ;
 
         _ReturnToTitleButton.onClick.AddListener(LoadTitle);
         _RetryButton.onClick.AddListener(RetryStage);
@@ -53,12 +58,35 @@ public class UIManager : MonoBehaviour
 
         timer = 0.0f;
         isDisplayed = false;
+        startDontPause = true;
 
-
+        player.GetComponent<PlayerController>().enabled = false; //ゲーム開始時にプレイヤーコントローラーをオフ
     }
 
     void Update()
     {
+        // マウスがUI上にあるかどうか確認
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            // マウスの下にあるUIを取得（Raycastを使う）
+            PointerEventData pointer = new PointerEventData(EventSystem.current);
+            pointer.position = Input.mousePosition;
+
+            var raycastResults = new System.Collections.Generic.List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, raycastResults);
+
+            foreach (var result in raycastResults)
+            {
+                var selectable = result.gameObject.GetComponent<Selectable>();
+                if (selectable != null && result.gameObject != EventSystem.current.currentSelectedGameObject)
+                {
+                    // マウス下のSelectableを強制選択
+                    selectable.Select();
+                    break;
+                }
+            }
+        }
+
         if (player != null)
         {
             UpdateHPText(player.currentHealth);
@@ -81,38 +109,37 @@ public class UIManager : MonoBehaviour
             TogglePauseUI();
         }
 
-        if (!isDisplayed)
-        {
-            StartInformation();
-        }
-
         if (player._canExit == true)
         {
             ExitInformation();
         }
     }
 
-    void StartInformation()
+    public void StartInformation()
     {
-        timer += Time.deltaTime; // 経過時間をカウント
+        player.GetComponent<PlayerController>().enabled = true; // ゲーム開始時のインフォメーションが終わったらプレイヤーコントローラーをオン
 
-        if (timer >= displayDelay)
-        {
-            // 一定時間経過したらオブジェクトを表示
-            _StartInf.gameObject.SetActive(false);
-            isDisplayed = true;
-        }
+        // 一定時間経過したらオブジェクトを表示
+        _StartInf.gameObject.SetActive(false);
+        isDisplayed = true;
+        startDontPause = false;
     }
 
+    /// <summary>
+    /// ゲームクリア時起動
+    /// </summary>
     void ShowStageClearUI()
     {
         _StageClearImage.gameObject.SetActive(true);
         _ReturnToTitleButton.gameObject.SetActive(true);
         _RetryButton.gameObject.SetActive(true);
-        _RetryButton.Select();
+        _RetryButton.Select();// 初期選択ボタン 
         buttonsActivated = true;
     }
 
+    /// <summary>
+    /// ゲームオーバー時起動
+    /// </summary>
     void ShowGameOverUI()
     {
         _GameOverPanel.SetActive(true);
@@ -122,20 +149,26 @@ public class UIManager : MonoBehaviour
         buttonsActivated = true;
     }
 
+    /// <summary>
+    /// ポーズのオン・オフ
+    /// </summary>
     public void TogglePauseUI()
     {
-        if (player.OpeningMap == true)
-            return;
-        _PauseRetryButton.Select(); // 初期選択ボタン 
-        isPauseing = !isPauseing;
-        _PausePanel.SetActive(isPauseing);
-        if (isPauseing)
+        if (startDontPause == false)
         {
-            Time.timeScale = 0f;
-        }
-        else
-        {
-            Time.timeScale = 1f;
+            if (player.OpeningMap == true)
+                return;
+            _PauseRetryButton.Select(); // 初期選択ボタン 
+            isPauseing = !isPauseing;
+            _PausePanel.SetActive(isPauseing);
+            if (isPauseing)
+            {
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
         }
     }
 
