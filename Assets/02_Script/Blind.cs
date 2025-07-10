@@ -9,6 +9,7 @@ public class Blind : MonoBehaviour
     {
         for (int i = 0; i < breakObject.Length; i++)
         {
+            //指定したオブジェクトがなくなった時ブラインドを外す
             if (breakObject[i] == null)
             {
                 Destroy(this.gameObject);

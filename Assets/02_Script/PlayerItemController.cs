@@ -54,10 +54,14 @@ public class PlayerItemController : MonoBehaviour
         // スロットUIを初期化
         UpdateSlotUI();
     }
+
+    /// <summary>
+    /// アイテムを拾う処理
+    /// </summary>
+    /// <param name="other"></param>
     void OnTriggerEnter(Collider other)
     {
-        // アイテムを拾う処理
-        if (other.CompareTag("Potion") || other.CompareTag("gasMask") || other.CompareTag("Cleaning")
+        if (other.CompareTag("Potion") || other.CompareTag("Cleaning")
             || (other.CompareTag("StaminaPotion")))
         {
             SoundManager.Instance.Play("アイテム入手");
@@ -66,6 +70,10 @@ public class PlayerItemController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// アイテムを拾った時に保存する
+    /// </summary>
+    /// <param name="item"></param>
     void AddItemToSlot(GameObject item)
     {
         // 空きスロットを探す
@@ -73,20 +81,19 @@ public class PlayerItemController : MonoBehaviour
         {
             if (itemSlots[i] == null)
             {
-                itemSlots[i] = item; // アイテムを保存
-                item.SetActive(false); // 拾ったアイテムを非表示にする
+                itemSlots[i] = item;
+                item.SetActive(false);
                 Debug.Log($"Item added to slot {i + 1}: {item.name} ({item.tag})");
-                UpdateSlotUI(); // UIを更新
+                UpdateSlotUI();
                 return;
             }
         }
-
-        // スロットが満杯の場合
-        Debug.Log("No empty slot available!");
     }
 
 
-
+    /// <summary>
+    /// 拾ったアイテムに応じてUIを更新する
+    /// </summary>
     void UpdateSlotUI()
     {
         for (int i = 0; i < maxSlots; i++)
@@ -146,27 +153,23 @@ public class PlayerItemController : MonoBehaviour
         }
     }
 
-void ActivateItemEffectByTag(string tag)
+    /// <summary>
+    /// タグによるアイテム効果を発動
+    /// </summary>
+    /// <param name="tag"></param>
+    void ActivateItemEffectByTag(string tag)
     {
-        // タグによるアイテム効果を発動
         switch (tag)
         {
             case "Potion":
-                //HealPlayer(25); // ポーションで回復
                 StartCoroutine(Heal(50));
                 break;
 
-            case "gasMask":
-                ActivateGasMask(); // ガスマスクで毒効果を軽減
-                break;
-
             case "Cleaning":
-                //CleanArea();
                 StartCoroutine(CleanLoop());
                 break;
 
             case "StaminaPotion":
-                //StaminaPotion();    // スタミナポーションでスタミナがフル回復
                 StartCoroutine(Stamina());
                 break;
 
@@ -175,32 +178,38 @@ void ActivateItemEffectByTag(string tag)
                 break;
         }
     }
+
+    /// <summary>
+    /// アイテムの使用S
+    /// </summary>
+    /// <param name="slotIndex"></param>
     void UseItem(int slotIndex)
     {
         // 指定スロットのアイテムを使用
         if (slotIndex >= 0 && slotIndex < itemSlots.Count && itemSlots[slotIndex] != null)
         {
             GameObject item = itemSlots[slotIndex];
-            Debug.Log($"Using item from slot {slotIndex + 1}: {item.name} ({item.tag})");
 
-            // アイテム効果を発動
             ActivateItemEffectByTag(item.tag);
-
-            // スロットを空にする
             itemSlots[slotIndex] = null;
-            UpdateSlotUI(); // UIを更新
+            UpdateSlotUI(); 
         }
         else
         {
             Debug.Log($"Slot {slotIndex + 1} is empty!");
         }
     }
+
+    /// <summary>
+    /// 押したキーやボタンに応じたアイテムを使用
+    /// </summary>
+    /// <param name="context"></param>
     public void OnUseItem(InputAction.CallbackContext context)
     {
         if (context.performed && !playerController.OpeningMap)
         {
             // 入力されたキーまたはボタンに対応するスロット番号を取得 
-            string input = context.control.name; // 押されたキーまたはボタンの名前を取得 
+            string input = context.control.name; 
             int slotIndex = -1;
 
             // 入力に対応するスロット番号を判定 
@@ -247,25 +256,9 @@ void ActivateItemEffectByTag(string tag)
     ///アイテム効果
     ////////////
 
-
-    private void HealPlayer(int healamount)
-    {
-        SoundManager.Instance.Play("ポーション");
-
-        // パーティクルシステムのインスタンスを生成する。
-        ParticleSystem newParticle = Instantiate(potionEffect);
-        // パーティクルの発生場所をこのスクリプトをアタッチしているGameObjectの場所にする。
-        newParticle.transform.position = this.transform.position;
-        // パーティクルをプレイヤーの子オブジェクトにする
-        newParticle.transform.parent = this.transform;
-        // パーティクルを発生させる。
-        newParticle.Play();
-
-        playerController.currentHealth += healamount;
-        if (playerController.currentHealth > playerController.maxHealth)
-            playerController.currentHealth = playerController.maxHealth;
-    }
-
+    /// <summary>
+    /// ヒールポーションの効果
+    /// </summary>
     IEnumerator Heal(int healAmount)
     {
         SoundManager.Instance.Play("ポーション");
@@ -296,33 +289,10 @@ void ActivateItemEffectByTag(string tag)
         yield return null;
     }
 
-    private void CleanArea()
-    {
-        SoundManager.Instance.Play("浄化アイテム");
-        RaycastHit[] hits = Physics.SphereCastAll(
-            this.gameObject.transform.position, cleanRange,
-            Vector3.up);
-
-        Debug.Log($"検出されたコライダーの数: {hits.Length}");
-
-        foreach (var hit in hits)
-        {
-            Debug.Log($"検出されたオブジェクト {hit.collider.name}");
-            if (hit.collider.CompareTag("poison"))
-            {
-                // タグを poison に変更
-                hit.collider.tag = "floor";
-
-                // 色を変更
-                hit.collider.GetComponent<Renderer>().material.color = floorColor;
-            }
-            if (hit.collider.CompareTag("PoisonGas"))
-            {
-                Destroy(hit.collider.gameObject);
-            }
-        }
-    }
-
+    /// <summary>
+    /// 浄化アイテムの効果
+    /// </summary>
+    /// <returns></returns>
     IEnumerator CleanLoop()
     {
         SoundManager.Instance.Play("浄化アイテム");
@@ -372,24 +342,10 @@ void ActivateItemEffectByTag(string tag)
         yield return null;
     }
 
-
-
-    private void StaminaPotion()
-    {
-        SoundManager.Instance.Play("スタミナポーション");
-
-        // パーティクルシステムのインスタンスを生成する。
-        ParticleSystem newParticle = Instantiate(staminaEffect);
-        // パーティクルの発生場所をこのスクリプトをアタッチしているGameObjectの場所にする。
-        newParticle.transform.position = this.transform.position;
-        // パーティクルをプレイヤーの子オブジェクトにする
-        newParticle.transform.parent = this.transform;
-        // パーティクルを発生させる。
-        newParticle.Play();
-
-        playerController.currentStamina = playerController.maxStamina;
-    }
-
+    /// <summary>
+    /// スタミナポーションの効果
+    /// </summary>
+    /// <returns></returns>
     IEnumerator Stamina()
     {
         SoundManager.Instance.Play("ポーション");
@@ -418,34 +374,6 @@ void ActivateItemEffectByTag(string tag)
             a += Time.deltaTime;
         }
         yield return null;
-    }
-
-    private void ActivateGasMask()
-    {
-        SoundManager.Instance.Play("ガスマスク");
-
-        // パーティクルシステムのインスタンスを生成する。
-        ParticleSystem newParticle = Instantiate(gasMaskEffect);
-        // パーティクルの発生場所をこのスクリプトをアタッチしているGameObjectの場所にする。
-        newParticle.transform.position = this.transform.position;
-        // パーティクルをプレイヤーの子オブジェクトにする
-        newParticle.transform.parent = this.transform;
-        // パーティクルを発生させる。
-        newParticle.Play();
-
-        if (isGasMaskActive) return;
-
-
-        playerController.currentDamageInterval = 0;
-
-        Invoke(nameof(DeactiveGasMask), 15);
-    }
-
-    private void DeactiveGasMask()
-    {
-        playerController.currentDamageInterval = 0.2f;
-        isGasMaskActive = false;
-
     }
 
 }

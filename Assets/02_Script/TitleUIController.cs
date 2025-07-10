@@ -35,7 +35,36 @@ public class TitleUIController : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    // シーンが読み込まれた後に呼ばれる
+    private void Update()
+    {
+        // マウスがUI上にあるかどうか確認
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            // マウスの下にあるUIを取得（Raycastを使う）
+            PointerEventData pointer = new PointerEventData(EventSystem.current);
+            pointer.position = Input.mousePosition;
+
+            var raycastResults = new System.Collections.Generic.List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, raycastResults);
+
+            foreach (var result in raycastResults)
+            {
+                var selectable = result.gameObject.GetComponent<Selectable>();
+                if (selectable != null && result.gameObject != EventSystem.current.currentSelectedGameObject)
+                {
+                    // マウス下のSelectableを強制選択
+                    selectable.Select();
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// シーンが読み込まれた後に呼ばれる
+    /// </summary>
+    /// <param name="scene"></param>
+    /// <param name="mode"></param>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // タイトルシーンの場合、最初のボタン選択を設定
@@ -51,7 +80,10 @@ public class TitleUIController : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    private void StartGame()
+    /// <summary>
+    /// セレクト画面に移動
+    /// </summary>
+    public void StartGame()
     {
         backButton.Select();
         Debug.Log("セレクト画面に移動");
@@ -59,9 +91,11 @@ public class TitleUIController : MonoBehaviour
         titleCanvas.SetActive(false);
     }
 
-    private void QuitGame()
+    /// <summary>
+    /// ゲーム終了
+    /// </summary>
+    public void QuitGame()
     {
-        // アプリケーション終了
         Application.Quit();
 
         // エディターでの動作をサポート（UnityEditor名前空間が必要）
@@ -70,21 +104,28 @@ public class TitleUIController : MonoBehaviour
 #endif
     }
 
-    private void BackTitle()
+    /// <summary>
+    /// タイトル画面に戻る
+    /// </summary>
+    public void BackTitle()
     {
         startButton.Select();
-        //タイトルに戻る
         titleCanvas.SetActive(true);
         selectCanvas.SetActive(false);
     }
 
-
-    private void ChangeLevel1()
+    /// <summary>
+    /// レベル1ステージ遷移
+    /// </summary>
+    public void ChangeLevel1()
     {
         SceneManager.LoadScene("Level1"); // ゲームシーン名を適切に変更してください
     }
 
-    private void ChangeLevel2()
+    /// <summary>
+    /// レベル2ステージ遷移
+    /// </summary>
+    public void ChangeLevel2()
     {
         SceneManager.LoadScene("Level2"); // ゲームシーン名を適切に変更してください
     }
