@@ -118,11 +118,10 @@ public class UIManager : MonoBehaviour
     public void StartInformation()
     {
         player.GetComponent<PlayerController>().enabled = true; // ゲーム開始時のインフォメーションが終わったらプレイヤーコントローラーをオン
-
-        // 一定時間経過したらオブジェクトを表示
         _StartInf.gameObject.SetActive(false);
         isDisplayed = true;
         startDontPause = false;
+        SoundManager.Instance.Play("ボタンクリック");
     }
 
     /// <summary>
@@ -193,18 +192,21 @@ public class UIManager : MonoBehaviour
 
     public void LoadTitle()
     {
+        SoundManager.Instance.Play("ボタンクリック");
         Time.timeScale = 1f; // シーン遷移時に時間スケールをリセット
         SceneManager.LoadScene("Title");
     }
 
     public void RetryStage()
     {
+        SoundManager.Instance.Play("ボタンクリック");
         Time.timeScale = 1f; // シーン遷移時に時間スケールをリセット
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void ExitGame()
     {
+        SoundManager.Instance.Play("ボタンクリック");
         Application.Quit();
 
 #if UNITY_EDITOR

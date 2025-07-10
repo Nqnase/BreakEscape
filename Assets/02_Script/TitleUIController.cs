@@ -15,6 +15,8 @@ public class TitleUIController : MonoBehaviour
     [SerializeField] private GameObject titleCanvas;
     [SerializeField] private GameObject selectCanvas;
 
+    SoundManager soundManager;
+
     void Start()
     {
         selectCanvas.SetActive(false);
@@ -89,6 +91,7 @@ public class TitleUIController : MonoBehaviour
         Debug.Log("セレクト画面に移動");
         selectCanvas.SetActive(true);
         titleCanvas.SetActive(false);
+        SoundManager.Instance.Play("ボタンクリック");
     }
 
     /// <summary>
@@ -96,6 +99,7 @@ public class TitleUIController : MonoBehaviour
     /// </summary>
     public void QuitGame()
     {
+        SoundManager.Instance.Play("ボタンクリック");
         Application.Quit();
 
         // エディターでの動作をサポート（UnityEditor名前空間が必要）
@@ -112,6 +116,7 @@ public class TitleUIController : MonoBehaviour
         startButton.Select();
         titleCanvas.SetActive(true);
         selectCanvas.SetActive(false);
+        SoundManager.Instance.Play("ボタンクリック");
     }
 
     /// <summary>
@@ -119,6 +124,7 @@ public class TitleUIController : MonoBehaviour
     /// </summary>
     public void ChangeLevel1()
     {
+        SoundManager.Instance.Play("ボタンクリック");
         SceneManager.LoadScene("Level1"); // ゲームシーン名を適切に変更してください
     }
 
@@ -127,6 +133,7 @@ public class TitleUIController : MonoBehaviour
     /// </summary>
     public void ChangeLevel2()
     {
+        SoundManager.Instance.Play("ボタンクリック");
         SceneManager.LoadScene("Level2"); // ゲームシーン名を適切に変更してください
     }
 }

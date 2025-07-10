@@ -1727,6 +1727,11 @@ PrefabInstance:
       propertyPath: soundDatas.Array.data[8].defaultVolume
       value: 0.24
       objectReference: {fileID: 0}
+    - target: {fileID: 4859868931587958843, guid: e036daf503bd55145aaaf33aa9e198c6,
+        type: 3}
+      propertyPath: soundDatas.Array.data[12].defaultVolume
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 5093887495458627726, guid: e036daf503bd55145aaaf33aa9e198c6,
         type: 3}
       propertyPath: m_Name
