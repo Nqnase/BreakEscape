@@ -45,8 +45,7 @@ public class BouncePlayer : MonoBehaviour
                 return;
             }
             float speed = collision.gameObject.GetComponent<PlayerController>().moveSpeed;
-            collision.gameObject.GetComponent<PlayerController>().moveSpeed = 0;
-
+            collision.gameObject.GetComponent<PlayerController>().enabled = false;
             isInvincible = true;
             SoundManager.Instance.Play("‘ä•—‚É“–‚½‚Á‚½");
             //Debug.Log("–³“G’†");
@@ -62,11 +61,13 @@ public class BouncePlayer : MonoBehaviour
 
             // ˆê’èŠÔ‘Ò‚Â
             await UniTask.Delay(TimeSpan.FromSeconds(waitTime));
-            collision.gameObject.GetComponent<PlayerController>().moveSpeed = speed;
             collision.rigidbody.isKinematic = true;
             collision.rigidbody.isKinematic = false;
             isInvincible = false;
+            collision.gameObject.GetComponent<PlayerController>().moveSpeed = 1f;
+            collision.gameObject.GetComponent<PlayerController>().enabled = true;
             //Debug.Log("–³“G‰ğœ");
+            Debug.Log(speed);
         }
     }
 

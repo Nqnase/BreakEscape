@@ -278,6 +278,7 @@ public class PlayerItemController : MonoBehaviour
         float a = 0;
         while (a < remainTime)
         {
+            //ƒvƒŒƒCƒ„[‚Ì‰ñ“]‚Æ‹t‘¤‚É‰ñ“]‚ð‚©‚¯‚é
             newParticle.gameObject.transform.rotation = Quaternion.Euler
                 (newParticle.gameObject.transform.rotation.x,
                 newParticle.gameObject.transform.rotation.y - transform.root.rotation.y,
