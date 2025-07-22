@@ -275,8 +275,9 @@ public class PlayerItemController : MonoBehaviour
         if (playerController.currentHealth > playerController.maxHealth)
             playerController.currentHealth = playerController.maxHealth;
         float remainTime = newParticle.duration * 2;
-        float a = 0;
-        while (a < remainTime)
+        //アイテムを使っている時間
+        float useItemTime = 0;
+        while (useItemTime < remainTime)
         {
             //プレイヤーの回転と逆側に回転をかける
             newParticle.gameObject.transform.rotation = Quaternion.Euler
@@ -285,7 +286,7 @@ public class PlayerItemController : MonoBehaviour
                 newParticle.gameObject.transform.rotation.z);
 
             yield return new WaitForSeconds(Time.deltaTime);
-            a += Time.deltaTime;
+            useItemTime += Time.deltaTime;
         }
         yield return null;
     }
@@ -306,30 +307,27 @@ public class PlayerItemController : MonoBehaviour
         newParticle.transform.parent = this.transform;
         // パーティクルを発生させる。
         newParticle.Play();
-
-        float a = 0;
-        while (a < loopTime)
+        //アイテムを使っている時間
+        float useItemTime = 0;
+        while (useItemTime < loopTime)
         {
+            //プレイヤーの回転と逆側に回転をかける
             newParticle.gameObject.transform.rotation = Quaternion.Euler
                 (newParticle.gameObject.transform.rotation.x,
                 newParticle.gameObject.transform.rotation.y - transform.root.rotation.y,
                 newParticle.gameObject.transform.rotation.z);
 
+            //一定範囲内のオブジェクトをチェック
             RaycastHit[] hits = Physics.SphereCastAll(
                 this.gameObject.transform.position, cleanRange,
                 Vector3.up);
 
-            Debug.Log($"検出されたコライダーの数: {hits.Length}");
-
             foreach (var hit in hits)
             {
-                Debug.Log($"検出されたオブジェクト {hit.collider.name}");
                 if (hit.collider.CompareTag("poison"))
                 {
-                    // タグを poison に変更
                     hit.collider.tag = "floor";
 
-                    // 色を変更
                     hit.collider.GetComponent<Renderer>().material.color = floorColor;
                 }
                 if (hit.collider.CompareTag("PoisonGas"))
@@ -338,7 +336,7 @@ public class PlayerItemController : MonoBehaviour
                 }
             }
             yield return new WaitForSeconds(Time.deltaTime);
-            a += Time.deltaTime;
+            useItemTime += Time.deltaTime;
         }
         yield return null;
     }
@@ -363,16 +361,18 @@ public class PlayerItemController : MonoBehaviour
         playerController.currentStamina = playerController.maxStamina;
 
         float remainTime = newParticle.duration * 2;
-        float a = 0;
-        while (a < remainTime)
+        //アイテムを使っている時間
+        float useItemTime = 0;
+        while (useItemTime < remainTime)
         {
+            //プレイヤーの回転と逆側に回転をかける
             newParticle.gameObject.transform.rotation = Quaternion.Euler
                 (newParticle.gameObject.transform.rotation.x,
                 newParticle.gameObject.transform.rotation.y - transform.root.rotation.y,
                 newParticle.gameObject.transform.rotation.z);
 
             yield return new WaitForSeconds(Time.deltaTime);
-            a += Time.deltaTime;
+            useItemTime += Time.deltaTime;
         }
         yield return null;
     }

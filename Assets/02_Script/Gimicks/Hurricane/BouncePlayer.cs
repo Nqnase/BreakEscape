@@ -84,9 +84,7 @@ public class BouncePlayer : MonoBehaviour
         {
             if (hit.collider.CompareTag("poison"))
             {
-                // タグを poison に変更
                 hit.collider.tag = "floor";
-                // 色を変更
                 hit.collider.GetComponent<Renderer>().material.color = floorColor;
             }
             if (hit.collider.CompareTag("PoisonGas"))
